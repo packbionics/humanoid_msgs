@@ -1,34 +1,29 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(humanoid_nav_msgs)
 
 #List to make rest of code more readable
 set( MESSAGE_DEPENDENCIES std_msgs geometry_msgs actionlib_msgs)
 
-#Declare build dependencies
-find_package(catkin REQUIRED
-    COMPONENTS
-    message_generation
-    ${MESSAGE_DEPENDENCIES} )
+find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(actionlib_msgs REQUIRED)
 
-#Add message files
-add_message_files(DIRECTORY msg FILES StepTarget.msg)
+find_package(rosidl_default_generators REQUIRED)
 
-#Add service files
-add_service_files(DIRECTORY srv
-    FILES
-    ClipFootstep.srv
-    PlanFootsteps.srv
-    PlanFootstepsBetweenFeet.srv
-    StepTargetService.srv )
+set(MSG_FILES msg/StepTarget.msg)
+set(ACTION_FILES action/ExecFootsteps.action)
+set(SRV_FILES
+    srv/ClipFootstep.srv
+    srv/PlanFootsteps.srv
+    srv/PlanFootstepsBetweenFeet.srv
+    srv/StepTargetService.srv
+)
 
-#Add action files
-add_action_files(DIRECTORY action
-    FILES
-    ExecFootsteps.action)
+rosidl_generate_interfaces(${PROJECT_NAME}
+    ${MSG_FILES}
+    ${ACTION_FILES}
+    ${SRV_FILES}
+    DEPENDENCIES ${MESSAGE_DEPENDENCIES}
+)
 
-#And now generate the messages
-generate_messages(DEPENDENCIES ${MESSAGE_DEPENDENCIES})
-
-# Generate catkin/pkg-config import information
-catkin_package( CATKIN_DEPENDS message_runtime ${MESSAGE_DEPENDENCIES} )
-
+ament_package()
